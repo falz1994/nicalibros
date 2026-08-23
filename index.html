@@ -171,8 +171,10 @@
     background: var(--accent);
     color: #fff;
   }
+  #tablaWrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .table {
     width: 100%;
+    min-width: 520px;
     border-collapse: collapse;
     background: var(--card);
     border: 1px solid var(--line);
@@ -233,6 +235,26 @@
     .controls { gap: 8px; }
     .controls input { flex-basis: 100%; }
     #contador { margin-left: 0; width: 100%; text-align: center; }
+    .view-toggle { width: 100%; }
+    .view-toggle button { flex: 1; padding: 10px 12px; }
+    .table, .table thead, .table tbody, .table tr, .table th, .table td { display: block; width: 100%; }
+    .table { min-width: 0; }
+    .table thead { display: none; }
+    .table tbody tr {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      flex-wrap: wrap;
+    }
+    .table tbody tr:last-child { border-bottom: 0; }
+    .table .th-cover { width: auto; flex: 0 0 auto; padding: 0; border: 0; }
+    .table td { padding: 0; border: 0; }
+    .table .td-titulo { flex: 1 1 60%; min-width: 0; }
+    .table .td-autor { flex: 1 1 100%; font-size: .82rem; }
+    .table .td-titulo .titulo-tabla, .table .td-autor .autor-tabla { white-space: normal; }
+    #tablaWrap { overflow: visible; }
   }
   @media (max-width: 380px) {
     .grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
@@ -313,9 +335,9 @@ function fila(l) {
        <span class="fallback" style="display:none">📖</span>`
     : `<span class="fallback" style="display:flex">📖</span>`;
   return `<tr>
-    <td class="th-cover"><div class="mini-cover">${img}</div></td>
-    <td><div class="titulo-tabla" title="${t}">${t}</div></td>
-    <td><div class="autor-tabla" title="${a}">${a}</div></td>
+    <td class="th-cover" data-label="Portada"><div class="mini-cover">${img}</div></td>
+    <td class="td-titulo" data-label="Título"><div class="titulo-tabla" title="${t}">${t}</div></td>
+    <td class="td-autor" data-label="Autor"><div class="autor-tabla" title="${a}">${a}</div></td>
   </tr>`;
 }
 
