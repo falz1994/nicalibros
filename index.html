@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biblioteca — Portadas</title>
+<style>
+  :root {
+    --bg: #f5f0e8;
+    --bg2: #efe7d8;
+    --card: #fffdf8;
+    --ink: #3d3226;
+    --ink-soft: #7a6a55;
+    --accent: #8c5836;
+    --accent-dark: #6e4327;
+    --gold: #c9a34a;
+    --line: #e2d6c2;
+    --shadow: 0 6px 22px rgba(61, 43, 28, .14);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    background:
+      radial-gradient(1200px 500px at 50% -100px, #fbf7ef 0%, transparent 60%),
+      var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+  header {
+    background: linear-gradient(120deg, #241a10, #4a3420 55%, #241a10);
+    color: #f3ead9;
+    padding: 34px 20px 26px;
+    text-align: center;
+    border-bottom: 4px solid var(--gold);
+    position: relative;
+    overflow: hidden;
+  }
+  header::after {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      repeating-linear-gradient(0deg, transparent 0 22px, rgba(255,255,255,.03) 22px 23px);
+    pointer-events: none;
+  }
+  h1 {
+    font-size: clamp(1.6rem, 4.5vw, 2.6rem);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    font-weight: 400;
+    text-shadow: 0 2px 8px rgba(0,0,0,.4);
+  }
+  .subtitle {
+    margin-top: 6px;
+    color: var(--gold);
+    font-size: clamp(.85rem, 2.4vw, 1.05rem);
+    font-style: italic;
+    letter-spacing: .12em;
+  }
+  .controls {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(255, 253, 248, .92);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+    padding: 12px 16px;
+    display: flex; gap: 10px; flex-wrap: wrap;
+    align-items: center; justify-content: center;
+  }
+  .controls input, .controls select {
+    font: 15px Georgia, serif;
+    padding: 9px 14px;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: #fff;
+    color: var(--ink);
+    outline: none;
+    min-width: 0;
+  }
+  .controls input { flex: 1 1 240px; max-width: 460px; }
+  .controls input:focus, .controls select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(140,88,54,.12); }
+  .controls label { font-size: .82rem; color: var(--ink-soft); letter-spacing: .04em; }
+  #contador {
+    margin-left: auto;
+    font-size: .85rem;
+    color: var(--ink-soft);
+    background: var(--bg2);
+    padding: 6px 14px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  main { max-width: 1400px; margin: 0 auto; padding: 26px 16px 60px; }
+  .grid {
+    display: grid;
+    gap: 22px;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    display: flex; flex-direction: column;
+    transition: transform .18s ease, box-shadow .18s ease;
+    animation: aparecer .5s ease both;
+  }
+  @keyframes aparecer { from { opacity: 0; transform: translateY(8px);} to { opacity: 1; transform: none;} }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(61,43,28,.22); }
+  .cover {
+    position: relative;
+    aspect-ratio: 2 / 3;
+    background: var(--bg2) center/cover no-repeat;
+  }
+  .cover img {
+    width: 100%; height: 100%; object-fit: cover;
+    display: block;
+    transition: opacity .25s ease;
+  }
+  .cover img.missing {
+    opacity: 0;
+  }
+  .fallback {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    padding: 14px; text-align: center;
+    background:
+      repeating-linear-gradient(45deg, #efe5d2, #efe5d2 10px, #eadfca 10px, #eadfca 20px);
+    color: var(--ink-soft);
+    font-style: italic;
+    font-size: .82rem;
+  }
+  .card-body {
+    padding: 12px 13px 14px;
+    display: flex; flex-direction: column; gap: 4px; flex: 1;
+  }
+  .card-body .titulo {
+    font-size: .95rem;
+    line-height: 1.25;
+    font-weight: 700;
+    color: var(--ink);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card-body .autor {
+    font-size: .82rem;
+    font-style: italic;
+    color: var(--ink-soft);
+    margin-top: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .vacio {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--ink-soft);
+    font-style: italic;
+    font-size: 1.1rem;
+    grid-column: 1 / -1;
+  }
+  footer {
+    text-align: center;
+    padding: 20px;
+    color: var(--ink-soft);
+    font-size: .8rem;
+    border-top: 1px solid var(--line);
+    background: var(--bg2);
+  }
+  @media (max-width: 640px) {
+    .grid { gap: 14px; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+    .controls { gap: 8px; }
+    .controls input { flex-basis: 100%; }
+    #contador { margin-left: 0; width: 100%; text-align: center; }
+  }
+  @media (max-width: 380px) {
+    .grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Biblioteca</h1>
+  <div class="subtitle">Portadas de los libros encontrados</div>
+</header>
+
+<div class="controls">
+  <input id="busqueda" type="search" placeholder="Buscar por título o autor…" autocomplete="off">
+  <select id="filtro">
+    <option value="">Todos</option>
+    <option value="sin">Solo libros con portada</option>
+    <option value="A–M">Títulos A–M</option>
+    <option value="N–Z">Títulos N–Z</option>
+  </select>
+  <span id="contador"></span>
+</div>
+
+<main>
+  <div class="grid" id="grid"></div>
+</main>
+
+<footer>Generado automáticamente · 199 libros · 172 con portada</footer>
+
+<script>
+const LIBROS = [{"titulo": "Sé tu mejor amigo: Autoestima, salud y felicidad: técnicas de superación", "autor": "Louis Proto", "portada": "https://covers.openlibrary.org/b/id/2271312-L.jpg"}, {"titulo": "Padre Rico, Padre Pobre", "autor": "Robert T. Kiyosaki", "portada": "https://covers.openlibrary.org/b/id/1174758-L.jpg"}, {"titulo": "Boulevard. Libro 3: Antes de ella", "autor": "Flor M. Salvador", "portada": "https://covers.openlibrary.org/b/id/12657274-L.jpg"}, {"titulo": "Tengo un secreto: El diario de Meri", "autor": "Blue Jeans", "portada": "https://covers.openlibrary.org/b/id/13882957-L.jpg"}, {"titulo": "El poder del pensamiento positivo", "autor": "Norman Vincent Peale", "portada": "https://covers.openlibrary.org/b/id/14570194-L.jpg"}, {"titulo": "Deja de ser tú", "autor": "Joe Dispenza", "portada": "https://covers.openlibrary.org/b/id/11348192-L.jpg"}, {"titulo": "A través de ti", "autor": "Ariana Godoy", "portada": "https://covers.openlibrary.org/b/id/11953912-L.jpg"}, {"titulo": "A través de mi ventana", "autor": "Ariana Godoy", "portada": "https://covers.openlibrary.org/b/id/11175935-L.jpg"}, {"titulo": "Los secretos de la mente millonaria", "autor": "T. Harv Eker", "portada": "https://covers.openlibrary.org/b/id/8078200-L.jpg"}, {"titulo": "Cómo ganar amigos e influir sobre las personas", "autor": "Dale Carnegie", "portada": "https://covers.openlibrary.org/b/id/13195013-L.jpg"}, {"titulo": "Déjalo ir. Aprende el arte del desapego para ser más feliz", "autor": "John Purkiss", "portada": null}, {"titulo": "Psicología de ventas", "autor": "Brian Tracy", "portada": "https://covers.openlibrary.org/b/id/1636816-L.jpg"}, {"titulo": "Busca en tu interior", "autor": "Chade-Meng Tan", "portada": "https://covers.openlibrary.org/b/id/13563786-L.jpg"}, {"titulo": "La Celestina", "autor": "Rosa Navarro Durán", "portada": "https://covers.openlibrary.org/b/id/14069096-L.jpg"}, {"titulo": "El mundo de afuera", "autor": "Jorge Franco", "portada": "https://covers.openlibrary.org/b/id/7279785-L.jpg"}, {"titulo": "El arte del liderazgo", "autor": "David Yonggi Cho", "portada": "https://covers.openlibrary.org/b/id/3329866-L.jpg"}, {"titulo": "La Isla del Tesoro", "autor": "Robert Louis Stevenson", "portada": "https://covers.openlibrary.org/b/id/13859660-L.jpg"}, {"titulo": "La Afectividad Masculina: Lo que toda mujer debe saber acerca de los hombres", "autor": "Walter Riso", "portada": "https://covers.openlibrary.org/b/id/14366745-L.jpg"}, {"titulo": "Osho: El libro del niño", "autor": "Osho", "portada": "https://covers.openlibrary.org/b/id/11333158-L.jpg"}, {"titulo": "Una vida con propósito", "autor": "Rick Warren", "portada": "https://covers.openlibrary.org/b/id/10471833-L.jpg"}, {"titulo": "Coraje: La alegría de vivir peligrosamente", "autor": "Osho", "portada": "https://covers.openlibrary.org/b/id/14091074-L.jpg"}, {"titulo": "Osho: El libro del hombre", "autor": "Osho", "portada": "https://covers.openlibrary.org/b/id/11333158-L.jpg"}, {"titulo": "La Afectividad Masculina", "autor": "Walter Riso", "portada": "https://covers.openlibrary.org/b/id/14366745-L.jpg"}, {"titulo": "Tras el cielo pirata", "autor": "Kevin Rushby", "portada": null}, {"titulo": "La Ciencia Descubre a Dios", "autor": "Ariel A. Roth", "portada": "https://covers.openlibrary.org/b/id/9721132-L.jpg"}, {"titulo": "Los Manuscritos del Mar Muerto", "autor": "Jaime Vázquez Allegue", "portada": "https://covers.openlibrary.org/b/id/11895780-L.jpg"}, {"titulo": "Dios Me Tocó", "autor": "Benny Hinn", "portada": "https://covers.openlibrary.org/b/id/2676032-L.jpg"}, {"titulo": "Texto de Neurociencias Cognitivas", "autor": "Víctor Manuel Alcaraz Romero, Emilio Gumá Díaz", "portada": null}, {"titulo": "En Honor Al Espíritu Santo", "autor": "Cash Luna", "portada": "https://covers.openlibrary.org/b/id/12324736-L.jpg"}, {"titulo": "Guiados por la eternidad", "autor": "John Bevere", "portada": "https://covers.openlibrary.org/b/id/1977386-L.jpg"}, {"titulo": "El infinito en la palma de la mano", "autor": "Gioconda Belli", "portada": "https://covers.openlibrary.org/b/id/7993513-L.jpg"}, {"titulo": "20.000 Leguas de Viaje Submarino", "autor": "Julio Verne", "portada": "https://covers.openlibrary.org/b/id/7398831-L.jpg"}, {"titulo": "El Arte del Liderazgo", "autor": "Dag Heward-Mills", "portada": "https://covers.openlibrary.org/b/id/3329866-L.jpg"}, {"titulo": "Tengo un secreto. El diario de Meri", "autor": "Blue Jeans", "portada": "https://covers.openlibrary.org/b/id/13882957-L.jpg"}, {"titulo": "La Herejía", "autor": "Adriano Petta", "portada": "https://covers.openlibrary.org/b/id/8161238-L.jpg"}, {"titulo": "Las fiebres de la memoria", "autor": "Gioconda Belli", "portada": "https://covers.openlibrary.org/b/id/13972965-L.jpg"}, {"titulo": "Decisiones difíciles", "autor": "Hillary Rodham Clinton", "portada": "https://covers.openlibrary.org/b/id/11616353-L.jpg"}, {"titulo": "El Imperio eres tú", "autor": "Javier Moro", "portada": "https://covers.openlibrary.org/b/id/7130627-L.jpg"}, {"titulo": "El Árbol de las Mentiras", "autor": "Frances Hardinge", "portada": "https://covers.openlibrary.org/b/id/13568520-L.jpg"}, {"titulo": "La última noche", "autor": "Francisco Gallardo", "portada": "https://covers.openlibrary.org/b/id/7388014-L.jpg"}, {"titulo": "Muerte en el Nilo", "autor": "Agatha Christie", "portada": "https://covers.openlibrary.org/b/id/14066646-L.jpg"}, {"titulo": "Las caras del tigre", "autor": "Alfonso Mateo-Sagasta", "portada": "https://covers.openlibrary.org/b/id/12853224-L.jpg"}, {"titulo": "Con Sandino en Nicaragua: La hora de la paz", "autor": "Ramón de Belausteguigoitia", "portada": "https://covers.openlibrary.org/b/id/7089518-L.jpg"}, {"titulo": "Los mejores cuentos del Antiguo Egipto", "autor": null, "portada": null}, {"titulo": "El libro de las almas", "autor": "Glenn Cooper", "portada": "https://covers.openlibrary.org/b/id/7347426-L.jpg"}, {"titulo": "El Horror de Dunwich y otros relatos", "autor": "H. P. Lovecraft", "portada": "https://covers.openlibrary.org/b/id/9085353-L.jpg"}, {"titulo": "Reina Valera 1960", "autor": null, "portada": "https://covers.openlibrary.org/b/id/1520671-L.jpg"}, {"titulo": "Nueva Versión Internacional", "autor": null, "portada": "https://covers.openlibrary.org/b/id/10803959-L.jpg"}, {"titulo": "La biblioteca de los muertos", "autor": "Glenn Cooper", "portada": "https://covers.openlibrary.org/b/id/7257289-L.jpg"}, {"titulo": "Harry Potter and the Sorcerer's Stone", "autor": "J.K. Rowling", "portada": "https://image.anobii.com/images/6/0/5/5a/5a3/5a3c/015a3c85297dda2c08.jpg"}, {"titulo": "Santa Biblia", "autor": null, "portada": "https://images-na.ssl-images-amazon.com/images/I/51-oh%2BtG0KL.jpg"}, {"titulo": "¿El traidor del siglo?", "autor": "John le Carré", "portada": "https://covers.openlibrary.org/b/id/10653192-L.jpg"}, {"titulo": "La casa de los espíritus", "autor": "Isabel Allende", "portada": "https://covers.openlibrary.org/b/id/12390937-L.jpg"}, {"titulo": "Santa Biblia Holy Bible", "autor": null, "portada": "https://covers.openlibrary.org/b/id/2917999-L.jpg"}, {"titulo": "Dinero fácil", "autor": "Jens Lapidus", "portada": "https://covers.openlibrary.org/b/id/14060369-L.jpg"}, {"titulo": "Los Pilares de la Tierra", "autor": "Ken Follett", "portada": "https://covers.openlibrary.org/b/id/9269909-L.jpg"}, {"titulo": "El Señor de los Anillos: Las Dos Torres", "autor": "J.R.R. Tolkien", "portada": "https://covers.openlibrary.org/b/id/14625765-L.jpg"}, {"titulo": "No te ahogues en un vaso de agua", "autor": "Richard Carlson", "portada": "https://covers.openlibrary.org/b/id/5246599-L.jpg"}, {"titulo": "El amor en los tiempos del cólera", "autor": "Gabriel García Márquez", "portada": "https://covers.openlibrary.org/b/id/10096404-L.jpg"}, {"titulo": "Dinero fácil (Trilogía Negra de Estocolmo I)", "autor": "Jens Lapidus", "portada": "https://covers.openlibrary.org/b/id/14060369-L.jpg"}, {"titulo": "La flor del café", "autor": "Ana Veloso", "portada": "https://covers.openlibrary.org/b/id/2270963-L.jpg"}, {"titulo": "Santa Biblia / Holy Bible", "autor": null, "portada": "https://covers.openlibrary.org/b/id/956640-L.jpg"}, {"titulo": "Longman Diccionario Pocket Inglés-Español Español-Inglés", "autor": "Pearson Education", "portada": "https://covers.openlibrary.org/b/id/1288889-L.jpg"}, {"titulo": "Hija de la fortuna", "autor": "Isabel Allende", "portada": "https://covers.openlibrary.org/b/id/10574160-L.jpg"}, {"titulo": "El Vencedor está Solo", "autor": "Paulo Coelho", "portada": "https://covers.openlibrary.org/b/id/6283214-L.jpg"}, {"titulo": "La Espía", "autor": null, "portada": "https://covers.openlibrary.org/b/id/13081710-L.jpg"}, {"titulo": "Manantiales en el Desierto, Segundo Tomo", "autor": "L. B. Cowman", "portada": "https://covers.openlibrary.org/b/id/12324792-L.jpg"}, {"titulo": "El Mundo como yo lo veo", "autor": "Albert Einstein", "portada": "https://covers.openlibrary.org/b/id/12348991-L.jpg"}, {"titulo": "Matemática", "autor": null, "portada": "https://covers.openlibrary.org/b/id/4979912-L.jpg"}, {"titulo": "Ciencias Naturales", "autor": null, "portada": "https://covers.openlibrary.org/b/id/5268359-L.jpg"}, {"titulo": "Trascender", "autor": null, "portada": "https://covers.openlibrary.org/b/id/12338951-L.jpg"}, {"titulo": "Sociología 11", "autor": null, "portada": null}, {"titulo": "No se lo digas a nadie", "autor": "Jaime Bayly", "portada": "https://covers.openlibrary.org/b/id/3834354-L.jpg"}, {"titulo": "Doce Mujeres Extraordinarias", "autor": "John F. MacArthur", "portada": "https://covers.openlibrary.org/b/id/1636842-L.jpg"}, {"titulo": "Diary of a Wimpy Kid: Rodrick Rules", "autor": "Jeff Kinney", "portada": "https://covers.openlibrary.org/b/id/8542270-L.jpg"}, {"titulo": "Diary of a Wimpy Kid", "autor": "Jeff Kinney", "portada": "https://covers.openlibrary.org/b/id/14376136-L.jpg"}, {"titulo": "Crepúsculo en Oslo", "autor": "Anne Holt", "portada": "https://covers.openlibrary.org/b/id/6593695-L.jpg"}, {"titulo": "La fragancia de la flor del café", "autor": "Ana Veloso", "portada": "https://covers.openlibrary.org/b/id/2270963-L.jpg"}, {"titulo": "El diablo de la botella y otros relatos", "autor": "Robert Louis Stevenson", "portada": "https://covers.openlibrary.org/b/id/13528200-L.jpg"}, {"titulo": "La Familia Cristiana", "autor": "Larry Christenson", "portada": "https://covers.openlibrary.org/b/id/1636641-L.jpg"}, {"titulo": "Harry Potter and the Goblet of Fire", "autor": "J.K. Rowling", "portada": "https://covers.openlibrary.org/b/id/12059372-L.jpg"}, {"titulo": "El diablo de la botella", "autor": "Robert Louis Stevenson", "portada": "https://covers.openlibrary.org/b/id/256596-L.jpg"}, {"titulo": "Confesiones de un Vicario (vivencias políticas)", "autor": "José Rizo Castellón", "portada": null}, {"titulo": "Winter of the World", "autor": "Ken Follett", "portada": "https://covers.openlibrary.org/b/id/7245065-L.jpg"}, {"titulo": "El gaucho Martín Fierro / La vuelta de Martín Fierro", "autor": "José Hernández", "portada": "https://covers.openlibrary.org/b/id/3362684-L.jpg"}, {"titulo": "Concordancia Temática", "autor": null, "portada": "https://covers.openlibrary.org/b/id/5057984-L.jpg"}, {"titulo": "La Gran Pregunta", "autor": "Alfredo González Holmann", "portada": "https://covers.openlibrary.org/b/id/8233464-L.jpg"}, {"titulo": "El Amante Japonés", "autor": "Isabel Allende", "portada": "https://covers.openlibrary.org/b/id/7435439-L.jpg"}, {"titulo": "Frankenstein", "autor": "Mary Shelley", "portada": "https://covers.openlibrary.org/b/id/12356249-L.jpg"}, {"titulo": "El Corán", "autor": "Anónimo", "portada": "https://covers.openlibrary.org/b/id/14083350-L.jpg"}, {"titulo": "La Espía", "autor": "Paulo Coelho", "portada": "https://covers.openlibrary.org/b/id/13081710-L.jpg"}, {"titulo": "Once Minutos", "autor": "Paulo Coelho", "portada": "http://2.bp.blogspot.com/-pO8I3OumoV8/VQpW39vk6oI/AAAAAAAAAsY/uFL4NRmkZns/s1600/imagen.jpg"}, {"titulo": "Tus zonas erróneas", "autor": "Wayne W. Dyer", "portada": "https://covers.openlibrary.org/b/id/5266788-L.jpg"}, {"titulo": "Caballo de Troya 6: Hermón", "autor": "J. J. Benítez", "portada": "https://covers.openlibrary.org/b/id/8351118-L.jpg"}, {"titulo": "Diccionario Bíblico Conciso Holman", "autor": "B&H Español Editorial Staff", "portada": "https://covers.openlibrary.org/b/id/1520923-L.jpg"}, {"titulo": "Concordancia Temática Holman", "autor": null, "portada": "https://covers.openlibrary.org/b/id/12324635-L.jpg"}, {"titulo": "Familia, Fe y Felicidad", "autor": "David Grams", "portada": "https://covers.openlibrary.org/b/id/12366765-L.jpg"}, {"titulo": "Madame Bovary", "autor": "Gustave Flaubert", "portada": "https://covers.openlibrary.org/b/id/12993424-L.jpg"}, {"titulo": "Al-Juarismi - El Nacimiento del Álgebra", "autor": null, "portada": null}, {"titulo": "Traducción del Nuevo Mundo de las Santas Escrituras", "autor": null, "portada": "https://covers.openlibrary.org/b/id/6908112-L.jpg"}, {"titulo": "Álgebra de Baldor", "autor": "Aurelio Baldor", "portada": "https://covers.openlibrary.org/b/id/7273068-L.jpg"}, {"titulo": "Decamerón", "autor": "Giovanni Boccaccio", "portada": "https://covers.openlibrary.org/b/id/6073528-L.jpg"}, {"titulo": "Rich Dad's Guía Para Hacerse Rico Sin Cancelar Sus Tarjetas", "autor": "Robert T. Kiyosaki", "portada": null}, {"titulo": "Despierta tu inteligencia: Cómo pensar, decidir y lograr mejores resultados en todo lo que haces", "autor": "Brian Tracy", "portada": null}, {"titulo": "El monje que vendió su Ferrari", "autor": "Robin Sharma", "portada": "https://covers.openlibrary.org/b/id/48817-L.jpg"}, {"titulo": "A orillas del río Piedra me senté y lloré", "autor": "Paulo Coelho", "portada": "https://covers.openlibrary.org/b/id/999131-L.jpg"}, {"titulo": "El Poder del Metabolismo", "autor": "Frank Suárez", "portada": "https://covers.openlibrary.org/b/id/7477098-L.jpg"}, {"titulo": "Manual para no morir de amor", "autor": "Walter Riso", "portada": "https://covers.openlibrary.org/b/id/7332657-L.jpg"}, {"titulo": "Antes de diciembre", "autor": "Joana Marcús", "portada": "https://covers.openlibrary.org/b/id/12080400-L.jpg"}, {"titulo": "Derechos y dignidad de las mujeres", "autor": null, "portada": null}, {"titulo": "Geografía de Nicaragua", "autor": null, "portada": null}, {"titulo": "Easy English", "autor": "Vicky Lee", "portada": "https://covers.openlibrary.org/b/id/8369170-L.jpg"}, {"titulo": "Creciendo en Valores", "autor": null, "portada": null}, {"titulo": "Camilo, Señor de la Vanguardia", "autor": "William Gálvez", "portada": "https://covers.openlibrary.org/b/id/10583775-L.jpg"}, {"titulo": "Molière: Obras Selectas", "autor": "Molière", "portada": "https://covers.openlibrary.org/b/id/3081869-L.jpg"}, {"titulo": "Tiempos de Historia, la barbarie en el hombre", "autor": "Agustín Torres Lazo", "portada": null}, {"titulo": "Easy English", "autor": "John McTavish", "portada": "https://covers.openlibrary.org/b/id/8369170-L.jpg"}, {"titulo": "Obras Selectas", "autor": "Charles Dickens", "portada": "https://covers.openlibrary.org/b/id/3712644-L.jpg"}, {"titulo": "Camilo Señor de la Vanguardia", "autor": "William Galvez", "portada": null}, {"titulo": "Obras Selectas", "autor": "Molière", "portada": "https://covers.openlibrary.org/b/id/3712644-L.jpg"}, {"titulo": "Cuentos Completos", "autor": "Rubén Darío", "portada": "https://covers.openlibrary.org/b/id/13663847-L.jpg"}, {"titulo": "El Precio del Trono", "autor": "Pilar Urbano", "portada": "https://covers.openlibrary.org/b/id/7273887-L.jpg"}, {"titulo": "Historia de Nicaragua. Tomo III", "autor": "Tomás Ayón", "portada": "https://covers.openlibrary.org/b/id/10950187-L.jpg"}, {"titulo": "Mayangna: Apuntes sobre la historia de los indígenas Sumu en Centroamérica", "autor": "Götz von Houwald", "portada": "https://covers.openlibrary.org/b/id/4871088-L.jpg"}, {"titulo": "La Dama de la Guerra", "autor": "Marie Benedict", "portada": null}, {"titulo": "Huérfanas de la Guerra", "autor": "Guillermo Cortés Domínguez", "portada": null}, {"titulo": "Un Rebelde Con Causa", "autor": "Franklin Graham", "portada": "https://covers.openlibrary.org/b/id/2676024-L.jpg"}, {"titulo": "Almas Cruzadas", "autor": "Emilio Ribes Iñesta", "portada": null}, {"titulo": "Psicología del Aprendizaje", "autor": null, "portada": "https://covers.openlibrary.org/b/id/14005558-L.jpg"}, {"titulo": "Crisis Emocionales", "autor": "Luis de Rivera", "portada": "https://covers.openlibrary.org/b/id/7400120-L.jpg"}, {"titulo": "La Herencia", "autor": null, "portada": "https://covers.openlibrary.org/b/id/361011-L.jpg"}, {"titulo": "Contabilidad I", "autor": null, "portada": null}, {"titulo": "El Cementerio de Praga", "autor": "Umberto Eco", "portada": "https://covers.openlibrary.org/b/id/8089952-L.jpg"}, {"titulo": "Sé lo que estás pensando", "autor": "John Verdon", "portada": "https://covers.openlibrary.org/b/id/6590236-L.jpg"}, {"titulo": "Historia de Nicaragua. Tomo III", "autor": "Tomas Ayón", "portada": "https://covers.openlibrary.org/b/id/10950187-L.jpg"}, {"titulo": "Mayangna. Apuntes sobre la historia de los indígenas Sumu en Centroamérica", "autor": "Götz von Houwald", "portada": "https://covers.openlibrary.org/b/id/4871088-L.jpg"}, {"titulo": "Mejor que Somoza cualquier cosa!: Revolución Nicaragüense y sandinismo : la otra cara de la moneda", "autor": "Jaime Morales Carazo", "portada": "https://covers.openlibrary.org/b/id/4130960-L.jpg"}, {"titulo": "La Dama de la Guerra", "autor": "Lillian Stewart Carl", "portada": null}, {"titulo": "Crisis Emocionales", "autor": null, "portada": "https://covers.openlibrary.org/b/id/7400120-L.jpg"}, {"titulo": "La Herencia: Arqueología de la Sucesión Presidencial en México", "autor": "Jorge G. Castañeda", "portada": "https://covers.openlibrary.org/b/id/10468202-L.jpg"}, {"titulo": "Su Embarazo Semana a Semana", "autor": "Glade B. Curtis", "portada": "https://covers.openlibrary.org/b/id/9339126-L.jpg"}, {"titulo": "Biblia el Poder de una Mujer Que Ora NVI", "autor": "Stormie Omartian", "portada": "https://covers.openlibrary.org/b/id/2979316-L.jpg"}, {"titulo": "Himnario de Alabanzas", "autor": null, "portada": "https://covers.openlibrary.org/b/id/12192608-L.jpg"}, {"titulo": "Los viajes de Gulliver", "autor": "Jonathan Swift", "portada": "https://covers.openlibrary.org/b/id/12717083-L.jpg"}, {"titulo": "Nuevo Diccionario Ilustrado de la Biblia", "autor": "Wilton M. Nelson", "portada": "https://covers.openlibrary.org/b/id/1660745-L.jpg"}, {"titulo": "Esperanza en Medio del Caos", "autor": "Mark Finley", "portada": null}, {"titulo": "Santa Biblia, Edición para Notas (Nueva Biblia de las Américas)", "autor": "null", "portada": "https://covers.openlibrary.org/b/id/6280184-L.jpg"}, {"titulo": "Finding God's Blessings in Broken Places", "autor": "Charles Stanley", "portada": null}, {"titulo": "Poesía nicaragüense del siglo XX: antología", "autor": "Steven F. White", "portada": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1388052952l/20265261.jpg"}, {"titulo": "Damián. Un secreto oscuro y perverso", "autor": "Alex Mírez", "portada": null}, {"titulo": "TR3S", "autor": "Ted Dekker", "portada": "https://covers.openlibrary.org/b/id/646361-L.jpg"}, {"titulo": "El Señor de los Anillos: La Comunidad del Anillo", "autor": "J. R. R. Tolkien", "portada": "https://covers.openlibrary.org/b/id/14625765-L.jpg"}, {"titulo": "Lo mejor de ti", "autor": "Joel Osteen", "portada": "https://covers.openlibrary.org/b/id/1385909-L.jpg"}, {"titulo": "No abras los ojos", "autor": "John Verdon", "portada": "https://images-na.ssl-images-amazon.com/images/I/41vGrxuNX9L.jpg"}, {"titulo": "El Zahir", "autor": "Paulo Coelho", "portada": "https://covers.openlibrary.org/b/id/37135-L.jpg"}, {"titulo": "Becoming", "autor": "Michelle Obama", "portada": "https://covers.openlibrary.org/b/id/8824664-L.jpg"}, {"titulo": "Ser feliz en Alaska", "autor": "Rafael Santandreu", "portada": "https://covers.openlibrary.org/b/id/7398987-L.jpg"}, {"titulo": "El Tigre: Emilio Azcárraga y su imperio Televisa", "autor": "Claudia Fernández y Andrew Paxman", "portada": "https://covers.openlibrary.org/b/id/5248853-L.jpg"}, {"titulo": "La guerra que no existió", "autor": "G. Enrique López Salinas", "portada": null}, {"titulo": "Maestría", "autor": "Robert Greene", "portada": "https://covers.openlibrary.org/b/id/7561012-L.jpg"}, {"titulo": "La hora final de Castro", "autor": "Andrés Oppenheimer", "portada": "https://covers4.booksamillion.com/covers/bam/0/67/187/299/0671872990_b.jpg"}, {"titulo": "Cincuenta sombras más oscuras", "autor": "E. L. James", "portada": "https://covers.openlibrary.org/b/id/14566702-L.jpg"}, {"titulo": "La luz que no puedes ver", "autor": "Anthony Doerr", "portada": "https://covers.openlibrary.org/b/id/14559680-L.jpg"}, {"titulo": "¿Quién eres tú y qué haces aquí? El libro de iO", "autor": "Jesús Yanes", "portada": "https://covers.openlibrary.org/b/id/13448965-L.jpg"}, {"titulo": "A través de la lluvia", "autor": "Ariana Godoy", "portada": "https://covers.openlibrary.org/b/id/13836515-L.jpg"}, {"titulo": "El Fabuloso Blackwell", "autor": "Arquímedes González", "portada": null}, {"titulo": "El mercader de Venecia", "autor": "William Shakespeare", "portada": "https://covers.openlibrary.org/b/id/7182819-L.jpg"}, {"titulo": "El Hobbit", "autor": "J.R.R. Tolkien", "portada": "https://covers.openlibrary.org/b/id/14627509-L.jpg"}, {"titulo": "Del Contrato social", "autor": "Jean-Jacques Rousseau", "portada": "https://covers.openlibrary.org/b/id/6581958-L.jpg"}, {"titulo": "Las penas del joven Werther", "autor": "Johann Wolfgang von Goethe", "portada": "https://covers.openlibrary.org/b/id/7187281-L.jpg"}, {"titulo": "La gaya ciencia", "autor": "Friedrich Nietzsche", "portada": "https://covers.openlibrary.org/b/id/3344274-L.jpg"}, {"titulo": "Biblia Reina-Valera", "autor": null, "portada": "https://covers.openlibrary.org/b/id/12324628-L.jpg"}, {"titulo": "La teoría del todo: El origen y el destino del universo", "autor": "Stephen W. Hawking", "portada": "https://covers.openlibrary.org/b/id/942436-L.jpg"}, {"titulo": "Un baile de máscaras", "autor": "Sergio Ramírez", "portada": "https://covers.openlibrary.org/b/id/4924695-L.jpg"}, {"titulo": "Estirpe sangrienta: Los Somoza", "autor": "Pedro Joaquín Chamorro Cardenal", "portada": null}, {"titulo": "Reflexiones", "autor": "Erna Alvarado Poblete", "portada": "https://covers.openlibrary.org/b/id/6045426-L.jpg"}, {"titulo": "El Padrino", "autor": "Mario Puzo", "portada": "https://covers.openlibrary.org/b/id/6507069-L.jpg"}, {"titulo": "Santa Biblia Reina-Valera 1960", "autor": null, "portada": "https://covers.openlibrary.org/b/id/13207880-L.jpg"}, {"titulo": "Rebelión en la granja", "autor": "George Orwell", "portada": "https://covers.openlibrary.org/b/id/13712713-L.jpg"}, {"titulo": "La vuelta al mundo en ochenta días", "autor": "Julio Verne", "portada": "https://covers.openlibrary.org/b/id/6976035-L.jpg"}, {"titulo": "Mi lucha. La historia del libro que marcó el siglo XX", "autor": "Sven Felix Kellerhoff", "portada": "https://covers.openlibrary.org/b/id/7408328-L.jpg"}, {"titulo": "Pasión India: La verdadera historia de la princesa española de Kapurthala", "autor": "Javier Moro", "portada": "https://covers.openlibrary.org/b/id/1047190-L.jpg"}, {"titulo": "El último príncipe del Imperio Mexicano", "autor": "C. M. Mayo", "portada": null}, {"titulo": "Culpa Mía", "autor": "Mercedes Ron", "portada": "https://covers.openlibrary.org/b/id/10512957-L.jpg"}, {"titulo": "Decameron", "autor": "Giovanni Boccaccio", "portada": "https://covers.openlibrary.org/b/id/6073528-L.jpg"}, {"titulo": "Un grito desesperado", "autor": "Carlos Cuauhtémoc Sánchez", "portada": "https://covers.openlibrary.org/b/id/2295609-L.jpg"}, {"titulo": "Juega sucio", "autor": "Sandra Brown", "portada": "https://covers.openlibrary.org/b/id/7787380-L.jpg"}, {"titulo": "La verdad sobre el caso Harry Quebert", "autor": "Joël Dicker", "portada": "https://covers.openlibrary.org/b/id/7376287-L.jpg"}, {"titulo": "Rompe la barrera del no: Negocia como si te fuera la vida en ello", "autor": "Chris Voss", "portada": "https://covers4.booksamillion.com/covers/bam/8/41/602/974/8416029741_b.jpg"}, {"titulo": "Los últimos días del III Reich", "autor": "Gerhard Boldt", "portada": "https://covers.openlibrary.org/b/id/13646874-L.jpg"}, {"titulo": "Después de Diciembre", "autor": "Joana Marcús", "portada": "https://covers.openlibrary.org/b/id/15154665-L.jpg"}, {"titulo": "Ellos van al este, ellas a la derecha", "autor": "Sabra E. Brock y Joseph F. Dooley", "portada": null}, {"titulo": "Boulevard", "autor": "Flor M. Salvador", "portada": "https://covers.openlibrary.org/b/id/12657274-L.jpg"}, {"titulo": "Pétalos de papel", "autor": "Iria G. Parente y Selene M. Pascual", "portada": "https://covers.openlibrary.org/b/id/13940995-L.jpg"}, {"titulo": "Rompe la barrera del no", "autor": "Chris Voss", "portada": "https://covers.openlibrary.org/b/id/8365942-L.jpg"}, {"titulo": "La vuelta al mundo en 80 días", "autor": "Julio Verne", "portada": "https://covers.openlibrary.org/b/id/11637458-L.jpg"}, {"titulo": "Después de Diciembre", "autor": "Joana Marcus", "portada": "https://covers.openlibrary.org/b/id/15154665-L.jpg"}, {"titulo": "Pasión india", "autor": "Javier Moro", "portada": "https://covers.openlibrary.org/b/id/1047190-L.jpg"}, {"titulo": "Despedidas", "autor": "Selene M. Pascual", "portada": "https://covers.openlibrary.org/b/id/13751897-L.jpg"}];
+
+const grid = document.getElementById('grid');
+const busqueda = document.getElementById('busqueda');
+const filtro = document.getElementById('filtro');
+const contador = document.getElementById('contador');
+
+function escapeHtml(s) {
+  return (s || '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+function card(l) {
+  const t = escapeHtml(l.titulo);
+  const a = escapeHtml(l.autor || 'Autor desconocido');
+  const img = l.portada
+    ? `<img src="${escapeHtml(l.portada)}" alt="${t}" loading="lazy"
+         onerror="this.classList.add('missing');this.nextElementSibling.style.display='flex';">
+       <div class="fallback" style="display:none">📖 ${t}</div>`
+    : `<div class="fallback" style="display:flex">📖 ${t}</div>`;
+  return `<article class="card">
+    <div class="cover">${img}</div>
+    <div class="card-body">
+      <div class="titulo" title="${t}">${t}</div>
+      <div class="autor" title="${a}">${a}</div>
+    </div>
+  </article>`;
+}
+
+function render() {
+  const q = busqueda.value.trim().toLowerCase();
+  const f = filtro.value;
+  const list = LIBROS.filter(l => {
+    if (q && !(l.titulo + ' ' + (l.autor||'')).toLowerCase().includes(q)) return false;
+    if (f === 'sin' && !l.portada) return false;
+    const letra = (l.titulo || ' ')[0].toUpperCase();
+    if (f === 'A–M' && !(letra >= 'A' && letra <= 'M')) return false;
+    if (f === 'N–Z' && !(letra >= 'N' && letra <= 'Z')) return false;
+    return true;
+  });
+  contador.textContent = list.length + ' libros';
+  grid.innerHTML = list.length
+    ? list.map(card).join('')
+    : '<div class="vacio">No se encontraron libros con ese criterio.</div>';
+}
+
+busqueda.addEventListener('input', render);
+filtro.addEventListener('change', render);
+render();
+</script>
+</body>
+</html>
