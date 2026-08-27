@@ -282,20 +282,22 @@
     .table { min-width: 0; }
     .table thead { display: none; }
     .table tbody tr {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      display: grid;
+      grid-template-columns: 62px 1fr;
+      column-gap: 12px;
+      row-gap: 3px;
+      align-items: start;
       padding: 12px 14px;
       border-bottom: 1px solid var(--line);
-      flex-wrap: wrap;
     }
     .table tbody tr:last-child { border-bottom: 0; }
-    .table .th-cover { width: auto; flex: 0 0 auto; padding: 0; border: 0; }
+    .table .th-cover { grid-column: 1; grid-row: 1 / span 4; width: auto; padding: 0; border: 0; }
+    .table .mini-cover { width: 62px; height: 92px; }
     .table td { padding: 0; border: 0; }
-    .table .td-titulo { flex: 1 1 auto; min-width: 0; }
-    .table .td-precio { flex: 0 0 auto; margin-left: auto; align-self: center; font-size: 1.15rem; text-align: right; }
-    .table .td-autor { flex: 1 1 100%; font-size: .82rem; }
-    .table .td-genero { flex: 1 1 100%; font-size: .78rem; }
+    .table .td-titulo { font-size: .95rem; }
+    .table .td-precio { font-size: 1.15rem; }
+    .table .td-genero { font-size: .78rem; }
+    .table .td-autor { font-size: .82rem; }
     #tablaWrap { overflow: visible; }
   }
   @media (max-width: 380px) {
