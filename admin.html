@@ -148,20 +148,6 @@
   .fin .grande { font-size: 2.6rem; }
   .fin p { color: var(--ink-soft); margin: 10px 0 18px; }
 
-/* ---------- ganancia mínima (valor leído de config; se cambia desde Supabase) ---------- */
-let GANANCIA = 50;
-async function cargarMargen() {
-  const { data } = await sb.from('config').select('valor').eq('clave', 'ganancia').maybeSingle();
-  if (data) {
-    const v = parseFloat(data.valor);
-    if (!isNaN(v)) GANANCIA = v;
-  }
-}
-const precioPublico = l => {
-  if (l.precio == null) return null;
-  return Math.ceil((l.precio + GANANCIA) / 50) * 50;
-};
-
 /* ---------- gestión ---------- */
   .buscar { width: 100%; font: 16px Georgia, serif; padding: 12px 16px; margin-bottom: 14px;
     border: 1px solid var(--line); border-radius: 24px; background: #fff; outline: none; }
@@ -458,6 +444,20 @@ function actualizarProgreso() {
 
 $('buscar').addEventListener('input', renderLista);
 $('filtroPrecio').addEventListener('change', renderLista);
+
+/* ---------- ganancia mínima (valor leído de config; se cambia desde Supabase) ---------- */
+let GANANCIA = 50;
+async function cargarMargen() {
+  const { data } = await sb.from('config').select('valor').eq('clave', 'ganancia').maybeSingle();
+  if (data) {
+    const v = parseFloat(data.valor);
+    if (!isNaN(v)) GANANCIA = v;
+  }
+}
+const precioPublico = l => {
+  if (l.precio == null) return null;
+  return Math.ceil((l.precio + GANANCIA) / 50) * 50;
+};
 
 function renderLista() {
   const q = $('buscar').value.trim().toLowerCase();
