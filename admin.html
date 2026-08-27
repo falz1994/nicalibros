@@ -244,7 +244,7 @@ $('btnMargen').onclick = async () => {
   <section id="login">
     <div class="caja">
       <h2>Iniciar sesión</h2>
-      <input id="email" type="email" placeholder="Correo" autocomplete="username">
+      <input id="email" type="text" placeholder="Usuario" autocomplete="username">
       <input id="pass" type="password" placeholder="Contraseña" autocomplete="current-password">
       <button class="btn full" id="btnLogin">Entrar</button>
       <div class="error" id="loginErr"></div>
@@ -343,8 +343,9 @@ $('pass').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
 async function login() {
   $('btnLogin').disabled = true;
   $('loginErr').textContent = '';
+  const v = $('email').value.trim();
   const { error } = await sb.auth.signInWithPassword({
-    email: $('email').value.trim(),
+    email: v.includes('@') ? v : 'admin@nicalibros.com',
     password: $('pass').value
   });
   $('btnLogin').disabled = false;
