@@ -74,6 +74,9 @@
   .btn.full { width: 100%; }
   .btn.sec { background: var(--bg2); color: var(--ink); border: 1px solid var(--line); }
   .error { color: #a33; font-size: .88rem; text-align: center; min-height: 1.2em; margin-top: 8px; }
+  .hint { color: var(--ink-soft); font-size: .88rem; margin-bottom: 16px; }
+  .preview { margin-top: 16px; color: var(--ink-soft); font-size: .92rem; line-height: 1.8; }
+  .preview b { color: var(--accent-dark); }
 
   /* ---------- app ---------- */
   #app { display: none; }
@@ -145,7 +148,33 @@
   .fin .grande { font-size: 2.6rem; }
   .fin p { color: var(--ink-soft); margin: 10px 0 18px; }
 
-  /* ---------- gestión ---------- */
+/* ---------- margen de ganancia ---------- */
+let MARGEN = 0;
+async function cargarMargen() {
+  const { data } = await sb.from('config').select('valor').eq('clave', 'ganancia').maybeSingle();
+  if (data) MARGEN = parseFloat(data.valor) || 0;
+  $('cfgMargen').value = MARGEN;
+  previewMargen();
+}
+const precioPublico = l => l.precio != null ? Math.round(l.precio * (1 + MARGEN / 100)) : null;
+function previewMargen() {
+  const m = parseFloat($('cfgMargen').value) || 0;
+  $('cfgPreview').innerHTML = [200, 400, 1000].map(p =>
+    `C$ ${p} → <b>C$ ${Math.round(p * (1 + m / 100))}</b>`).join(' &nbsp;·&nbsp; ');
+}
+$('cfgMargen').addEventListener('input', previewMargen);
+$('btnMargen').onclick = async () => {
+  const v = parseFloat($('cfgMargen').value);
+  if (isNaN(v) || v < 0 || v > 500) { toast('Porcentaje inválido', true); return; }
+  const { error } = await sb.from('config').upsert({ clave: 'ganancia', valor: String(v) });
+  if (error) { toast('Error: ' + error.message, true); return; }
+  MARGEN = v;
+  toast(`✓ Ganancia ${v}% guardada — el sitio público se actualiza solo`);
+  previewMargen();
+  renderLista();
+};
+
+/* ---------- gestión ---------- */
   .buscar { width: 100%; font: 16px Georgia, serif; padding: 12px 16px; margin-bottom: 14px;
     border: 1px solid var(--line); border-radius: 24px; background: #fff; outline: none; }
   .buscar:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(140,88,54,.12); }
@@ -221,6 +250,7 @@
       <span class="tabs">
         <button id="tabWizard" class="active">💰 Poner precios</button>
         <button id="tabGestion">📚 Libros</button>
+        <button id="tabConfig">⚙️ Ganancia</button>
       </span>
       <button class="logout" id="btnLogout">Salir</button>
     </div>
@@ -232,6 +262,20 @@
     <div id="vistaGestion" style="display:none">
       <input class="buscar" id="buscar" type="search" placeholder="Buscar por título o autor…">
       <div class="lista" id="lista"></div>
+    </div>
+
+    <div id="vistaConfig" style="display:none">
+      <div class="caja">
+        <h2>Ganancia sobre el precio</h2>
+        <p class="hint">El sitio público muestra el precio base más este porcentaje. Se aplica al instante, sin redeploy.</p>
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+          <input id="cfgMargen" type="number" min="0" max="500" step="1" inputmode="decimal"
+                 style="flex:0 0 110px; font:18px Georgia,serif; padding:12px 14px; border:1px solid var(--line); border-radius:10px; outline:none;">
+          <span style="font-size:1.1rem">%</span>
+          <button class="btn" id="btnMargen">Guardar</button>
+        </div>
+        <div class="preview" id="cfgPreview"></div>
+      </div>
     </div>
   </section>
 </main>
@@ -303,17 +347,20 @@ function entrar() {
   $('app').style.display = 'block';
   cargarWizard();
   cargarTodos();
+  cargarMargen();
 }
 
 /* ---------- tabs ---------- */
-$('tabWizard').onclick = () => setTab(true);
-$('tabGestion').onclick = () => setTab(false);
-function setTab(wizard) {
-  $('tabWizard').classList.toggle('active', wizard);
-  $('tabGestion').classList.toggle('active', !wizard);
-  $('vistaWizard').style.display = wizard ? '' : 'none';
-  $('vistaGestion').style.display = wizard ? 'none' : '';
-  if (!wizard) renderLista();
+const TABS = { tabWizard: 'vistaWizard', tabGestion: 'vistaGestion', tabConfig: 'vistaConfig' };
+$('tabWizard').onclick = () => setTab('tabWizard');
+$('tabGestion').onclick = () => setTab('tabGestion');
+$('tabConfig').onclick = () => setTab('tabConfig');
+function setTab(btnId) {
+  for (const [b, v] of Object.entries(TABS)) {
+    $(b).classList.toggle('active', b === btnId);
+    $(v).style.display = b === btnId ? '' : 'none';
+  }
+  if (btnId === 'tabGestion') renderLista();
 }
 
 /* ---------- wizard ---------- */
@@ -423,7 +470,7 @@ function renderLista() {
         <div class="t">${esc(l.titulo)}</div>
         <div class="a">${esc(l.autor || 'Autor desconocido')}${l.genero ? ' · ' + esc(l.genero) : ''}</div>
       </div>
-      <span class="precio-tag">${l.precio != null ? cdx(l.precio) : '—'}</span>
+      <span class="precio-tag">${l.precio != null ? cdx(l.precio) : '—'}${l.precio != null && MARGEN ? `<br><small style="font-weight:400;color:var(--ink-soft)">público ${cdx(precioPublico(l))}</small>` : ''}</span>
       <div class="acciones-f">
         <button class="mini-btn" onclick="abrirModal(${l.id})">${l.precio != null ? 'Cambiar' : 'Poner precio'}</button>
       </div>
