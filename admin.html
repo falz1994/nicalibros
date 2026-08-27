@@ -157,6 +157,15 @@
     border: 1px solid var(--line); border-radius: 24px; background: #fff;
     color: var(--ink); outline: none;
   }
+  .pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .pill {
+    flex: 1 1 auto;
+    font: 15px Georgia, serif; padding: 10px 16px;
+    border: 1px solid var(--line); border-radius: 22px;
+    background: #fff; color: var(--ink-soft);
+    transition: background .12s ease;
+  }
+  .pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
   .buscar:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(140,88,54,.12); }
   .lista { display: flex; flex-direction: column; gap: 10px; }
   .fila {
@@ -245,13 +254,11 @@
 
     <div id="vistaWizard"></div>
     <div id="vistaGestion" style="display:none">
-      <div style="display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap">
-        <input class="buscar" id="buscar" type="search" placeholder="Buscar por título o autor…" style="margin-bottom:0; flex:1 1 200px">
-        <select id="filtroPrecio" class="sel-filtro">
-          <option value="">Todos</option>
-          <option value="con">Con precio</option>
-          <option value="sin">Sin precio</option>
-        </select>
+      <input class="buscar" id="buscar" type="search" placeholder="Buscar por título o autor…" style="margin-bottom:10px">
+      <div class="pills" id="filtroPrecio">
+        <button type="button" class="pill active" data-v="">Todos</button>
+        <button type="button" class="pill" data-v="con">Con precio</button>
+        <button type="button" class="pill" data-v="sin">Sin precio</button>
       </div>
       <div class="lista" id="lista"></div>
     </div>
@@ -443,7 +450,14 @@ function actualizarProgreso() {
 }
 
 $('buscar').addEventListener('input', renderLista);
-$('filtroPrecio').addEventListener('change', renderLista);
+let filtroValor = '';
+document.querySelectorAll('#filtroPrecio .pill').forEach(b => {
+  b.addEventListener('click', () => {
+    filtroValor = b.dataset.v;
+    document.querySelectorAll('#filtroPrecio .pill').forEach(x => x.classList.toggle('active', x === b));
+    renderLista();
+  });
+});
 
 /* ---------- ganancia mínima (valor leído de config; se cambia desde Supabase) ---------- */
 let GANANCIA = 50;
@@ -461,7 +475,7 @@ const precioPublico = l => {
 
 function renderLista() {
   const q = $('buscar').value.trim().toLowerCase();
-  const f = $('filtroPrecio').value;
+  const f = filtroValor;
   const list = todos.filter(l => {
     if (q && !(l.titulo + ' ' + (l.autor || '')).toLowerCase().includes(q)) return false;
     if (f === 'con' && l.precio == null) return false;
@@ -475,7 +489,7 @@ function renderLista() {
         <div class="t">${esc(l.titulo)}</div>
         <div class="a">${esc(l.autor || 'Autor desconocido')}${l.genero ? ' · ' + esc(l.genero) : ''}</div>
       </div>
-      <span class="precio-tag">${l.precio != null ? `<span style="font-size:1.02rem">Venta ${cdx(precioPublico(l))}</span><br><small style="font-weight:400;color:var(--ink-soft)">base ${cdx(l.precio)} · ${fmtFecha(l.precio_fecha)}</small>` : '—'}</span>
+      <span class="precio-tag">${l.precio != null ? `<span style="font-size:1.02rem">Venta ${cdx(precioPublico(l))}</span><br><small style="font-weight:400;color:var(--ink-soft)">base ${cdx(l.precio)}</small><br><span style="font-size:.9rem;color:var(--accent-dark)">📅 ${fmtFecha(l.precio_fecha)}</span>` : '—'}</span>
       <div class="acciones-f">
         <button class="mini-btn" onclick="abrirModal(${l.id})">${l.precio != null ? 'Cambiar' : 'Poner precio'}</button>
       </div>
