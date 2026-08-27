@@ -376,7 +376,11 @@ fetch(API + '/config?clave=eq.ganancia&select=valor', { headers: { apikey: PUB }
     }
   })
   .catch(() => {});
-const precioPublico = l => l.precio ? Math.round(l.precio * (1 + MARGEN / 100)) : 0;
+const precioPublico = l => {
+  if (!l.precio) return 0;
+  const base = l.precio * (1 + MARGEN / 100);
+  return Math.max(Math.ceil(base / 50) * 50, l.precio + 50);
+};
 
 const grid = document.getElementById('grid');
 const tablaWrap = document.getElementById('tablaWrap');

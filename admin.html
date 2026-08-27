@@ -156,11 +156,18 @@ async function cargarMargen() {
   $('cfgMargen').value = MARGEN;
   previewMargen();
 }
-const precioPublico = l => l.precio != null ? Math.round(l.precio * (1 + MARGEN / 100)) : null;
+const precioPublico = l => {
+  if (l.precio == null) return null;
+  const base = l.precio * (1 + MARGEN / 100);
+  return Math.max(Math.ceil(base / 50) * 50, l.precio + 50);
+};
 function previewMargen() {
   const m = parseFloat($('cfgMargen').value) || 0;
-  $('cfgPreview').innerHTML = [200, 400, 1000].map(p =>
-    `C$ ${p} → <b>C$ ${Math.round(p * (1 + m / 100))}</b>`).join(' &nbsp;·&nbsp; ');
+  $('cfgPreview').innerHTML = [200, 400, 1000].map(p => {
+    const base = p * (1 + m / 100);
+    const pub = Math.max(Math.ceil(base / 50) * 50, p + 50);
+    return `C$ ${p} → <b>C$ ${pub}</b>`;
+  }).join(' &nbsp;·&nbsp; ');
 }
 $('cfgMargen').addEventListener('input', previewMargen);
 $('btnMargen').onclick = async () => {
