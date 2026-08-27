@@ -211,6 +211,12 @@ $('btnMargen').onclick = async () => {
   }
   .modal h3 { font-weight: 400; letter-spacing: .04em; margin-bottom: 4px; font-size: 1.05rem; }
   .modal .m-autor { font-size: .82rem; font-style: italic; color: var(--ink-soft); margin-bottom: 16px; }
+  .hist { margin-bottom: 14px; }
+  .hist:empty { display: none; }
+  .hist span {
+    display: inline-block; font-size: .78rem; color: var(--ink-soft);
+    background: var(--bg2); border-radius: 12px; padding: 4px 10px; margin: 0 6px 6px 0;
+  }
   .toast {
     position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%);
     background: var(--ink); color: #f3ead9; font-size: .9rem;
@@ -284,6 +290,7 @@ $('btnMargen').onclick = async () => {
   <div class="modal">
     <h3 id="mTitulo"></h3>
     <div class="m-autor" id="mAutor"></div>
+    <div class="hist" id="mHist"></div>
     <div class="grid-precios" id="mPrecios"></div>
     <div class="acciones">
       <input id="mCustom" type="number" min="1" step="1" placeholder="C$ otro">
@@ -317,6 +324,13 @@ function toast(msg, err) {
   t._h = setTimeout(() => t.className = 'toast', 2200);
 }
 const cdx = p => 'C$ ' + Number(p).toLocaleString('es-NI');
+const fmtFecha = (f, conHora) => {
+  if (!f) return '';
+  const d = new Date(f);
+  const opc = { day: '2-digit', month: '2-digit', year: 'numeric' };
+  if (conHora) { opc.hour = '2-digit'; opc.minute = '2-digit'; }
+  return d.toLocaleDateString('es-NI', opc);
+};
 const esc = s => (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const portadaHTML = l => l.portada
   ? `<img src="${esc(l.portada)}" alt="" loading="lazy" onerror="this.style.display='none'">📖`
@@ -442,7 +456,7 @@ async function deshacer() {
 /* ---------- gestión ---------- */
 async function cargarTodos() {
   const { data, error } = await sb.from('libros')
-    .select('id, titulo, autor, genero, portada, precio, total_ratings')
+    .select('id, titulo, autor, genero, portada, precio, precio_fecha, total_ratings')
     .order('titulo');
   if (error) { toast('Error cargando: ' + error.message, true); return; }
   todos = data;
@@ -470,7 +484,7 @@ function renderLista() {
         <div class="t">${esc(l.titulo)}</div>
         <div class="a">${esc(l.autor || 'Autor desconocido')}${l.genero ? ' · ' + esc(l.genero) : ''}</div>
       </div>
-      <span class="precio-tag">${l.precio != null ? cdx(l.precio) : '—'}${l.precio != null && MARGEN ? `<br><small style="font-weight:400;color:var(--ink-soft)">público ${cdx(precioPublico(l))}</small>` : ''}</span>
+      <span class="precio-tag">${l.precio != null ? cdx(l.precio) : '—'}${l.precio != null ? `<br><small style="font-weight:400;color:var(--ink-soft)">${MARGEN ? 'público ' + cdx(precioPublico(l)) + ' · ' : ''}${fmtFecha(l.precio_fecha)}</small>` : ''}</span>
       <div class="acciones-f">
         <button class="mini-btn" onclick="abrirModal(${l.id})">${l.precio != null ? 'Cambiar' : 'Poner precio'}</button>
       </div>
@@ -487,6 +501,20 @@ function abrirModal(id) {
   $('mPrecios').innerHTML = PRECIOS.map(p =>
     `<button onclick="guardarModal(${p})">${cdx(p)}</button>`).join('');
   $('modalFondo').classList.add('abierto');
+  cargarHistorico(id);
+}
+
+async function cargarHistorico(id) {
+  $('mHist').innerHTML = '';
+  const { data } = await sb.from('historico_precios')
+    .select('precio, fecha')
+    .eq('libro_id', id)
+    .order('fecha', { ascending: false })
+    .limit(10);
+  if (data && data.length) {
+    $('mHist').innerHTML = data.map(h =>
+      `<span>${cdx(h.precio)} · ${fmtFecha(h.fecha, true)}</span>`).join('');
+  }
 }
 $('mCerrar').onclick = () => $('modalFondo').classList.remove('abierto');
 $('modalFondo').onclick = e => { if (e.target === $('modalFondo')) $('mCerrar').onclick(); };
@@ -511,8 +539,7 @@ $('mQuitar').onclick = async () => {
 function cerrarYRefrescar(msg) {
   $('modalFondo').classList.remove('abierto');
   toast(msg);
-  actualizarProgreso();
-  renderLista();
+  cargarTodos();
   cargarWizard();
 }
 </script>
