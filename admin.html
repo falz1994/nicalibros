@@ -475,7 +475,7 @@ function renderLista() {
         <div class="t">${esc(l.titulo)}</div>
         <div class="a">${esc(l.autor || 'Autor desconocido')}${l.genero ? ' · ' + esc(l.genero) : ''}</div>
       </div>
-      <span class="precio-tag">${l.precio != null ? cdx(l.precio) : '—'}${l.precio != null ? `<br><small style="font-weight:400;color:var(--ink-soft)">público ${cdx(precioPublico(l))} · ${fmtFecha(l.precio_fecha)}</small>` : ''}</span>
+      <span class="precio-tag">${l.precio != null ? `<span style="font-size:1.02rem">Venta ${cdx(precioPublico(l))}</span><br><small style="font-weight:400;color:var(--ink-soft)">base ${cdx(l.precio)} · ${fmtFecha(l.precio_fecha)}</small>` : '—'}</span>
       <div class="acciones-f">
         <button class="mini-btn" onclick="abrirModal(${l.id})">${l.precio != null ? 'Cambiar' : 'Poner precio'}</button>
       </div>
