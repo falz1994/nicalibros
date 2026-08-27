@@ -148,43 +148,29 @@
   .fin .grande { font-size: 2.6rem; }
   .fin p { color: var(--ink-soft); margin: 10px 0 18px; }
 
-/* ---------- ganancia mínima ---------- */
+/* ---------- ganancia mínima (valor leído de config; se cambia desde Supabase) ---------- */
 let GANANCIA = 50;
 async function cargarMargen() {
   const { data } = await sb.from('config').select('valor').eq('clave', 'ganancia').maybeSingle();
   if (data) {
     const v = parseFloat(data.valor);
-    GANANCIA = isNaN(v) ? 50 : v;
+    if (!isNaN(v)) GANANCIA = v;
   }
-  $('cfgMargen').value = GANANCIA;
-  previewMargen();
 }
 const precioPublico = l => {
   if (l.precio == null) return null;
   return Math.ceil((l.precio + GANANCIA) / 50) * 50;
 };
-function previewMargen() {
-  const g = parseFloat($('cfgMargen').value) || 0;
-  $('cfgPreview').innerHTML = [200, 400, 700].map(p => {
-    const pub = Math.ceil((p + g) / 50) * 50;
-    return `C$ ${p} → <b>C$ ${pub}</b> (+C$ ${pub - p})`;
-  }).join(' &nbsp;·&nbsp; ');
-}
-$('cfgMargen').addEventListener('input', previewMargen);
-$('btnMargen').onclick = async () => {
-  const v = parseFloat($('cfgMargen').value);
-  if (isNaN(v) || v < 0 || v > 5000) { toast('Cantidad inválida', true); return; }
-  const { error } = await sb.from('config').upsert({ clave: 'ganancia', valor: String(v) });
-  if (error) { toast('Error: ' + error.message, true); return; }
-  GANANCIA = v;
-  toast(`✓ Ganancia mínima C$ ${v} guardada — el sitio público se actualiza solo`);
-  previewMargen();
-  renderLista();
-};
 
 /* ---------- gestión ---------- */
   .buscar { width: 100%; font: 16px Georgia, serif; padding: 12px 16px; margin-bottom: 14px;
     border: 1px solid var(--line); border-radius: 24px; background: #fff; outline: none; }
+  .buscar:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(140,88,54,.12); }
+  .sel-filtro {
+    font: 15px Georgia, serif; padding: 12px 14px;
+    border: 1px solid var(--line); border-radius: 24px; background: #fff;
+    color: var(--ink); outline: none;
+  }
   .buscar:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(140,88,54,.12); }
   .lista { display: flex; flex-direction: column; gap: 10px; }
   .fila {
@@ -264,7 +250,6 @@ $('btnMargen').onclick = async () => {
       <span class="tabs">
         <button id="tabWizard" class="active">💰 Poner precios</button>
         <button id="tabGestion">📚 Libros</button>
-        <button id="tabConfig">⚙️ Ganancia</button>
       </span>
       <button class="logout" id="btnLogout">Salir</button>
     </div>
@@ -274,22 +259,15 @@ $('btnMargen').onclick = async () => {
 
     <div id="vistaWizard"></div>
     <div id="vistaGestion" style="display:none">
-      <input class="buscar" id="buscar" type="search" placeholder="Buscar por título o autor…">
-      <div class="lista" id="lista"></div>
-    </div>
-
-    <div id="vistaConfig" style="display:none">
-      <div class="caja">
-        <h2>Ganancia mínima</h2>
-        <p class="hint">El sitio público redondea el precio hacia arriba a múltiplos de C$50, garantizando al menos esta ganancia.</p>
-        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
-          <input id="cfgMargen" type="number" min="0" max="5000" step="1" inputmode="decimal"
-                 style="flex:0 0 110px; font:18px Georgia,serif; padding:12px 14px; border:1px solid var(--line); border-radius:10px; outline:none;">
-          <span style="font-size:1.1rem">C$</span>
-          <button class="btn" id="btnMargen">Guardar</button>
-        </div>
-        <div class="preview" id="cfgPreview"></div>
+      <div style="display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap">
+        <input class="buscar" id="buscar" type="search" placeholder="Buscar por título o autor…" style="margin-bottom:0; flex:1 1 200px">
+        <select id="filtroPrecio" class="sel-filtro">
+          <option value="">Todos</option>
+          <option value="con">Con precio</option>
+          <option value="sin">Sin precio</option>
+        </select>
       </div>
+      <div class="lista" id="lista"></div>
     </div>
   </section>
 </main>
@@ -374,10 +352,9 @@ function entrar() {
 }
 
 /* ---------- tabs ---------- */
-const TABS = { tabWizard: 'vistaWizard', tabGestion: 'vistaGestion', tabConfig: 'vistaConfig' };
+const TABS = { tabWizard: 'vistaWizard', tabGestion: 'vistaGestion' };
 $('tabWizard').onclick = () => setTab('tabWizard');
 $('tabGestion').onclick = () => setTab('tabGestion');
-$('tabConfig').onclick = () => setTab('tabConfig');
 function setTab(btnId) {
   for (const [b, v] of Object.entries(TABS)) {
     $(b).classList.toggle('active', b === btnId);
@@ -480,12 +457,17 @@ function actualizarProgreso() {
 }
 
 $('buscar').addEventListener('input', renderLista);
+$('filtroPrecio').addEventListener('change', renderLista);
 
 function renderLista() {
   const q = $('buscar').value.trim().toLowerCase();
-  const list = todos.filter(l =>
-    !q || (l.titulo + ' ' + (l.autor || '')).toLowerCase().includes(q)
-  );
+  const f = $('filtroPrecio').value;
+  const list = todos.filter(l => {
+    if (q && !(l.titulo + ' ' + (l.autor || '')).toLowerCase().includes(q)) return false;
+    if (f === 'con' && l.precio == null) return false;
+    if (f === 'sin' && l.precio != null) return false;
+    return true;
+  });
   $('lista').innerHTML = list.length ? list.map(l => `
     <div class="fila">
       <div class="mini">${portadaHTML(l)}</div>
