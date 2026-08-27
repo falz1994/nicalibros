@@ -366,20 +366,20 @@ const LIBROS = [{"titulo": "Harry Potter y la piedra filosofal", "autor": "J.K. 
 
 const API = 'https://nsgysypegqvntlxndsaa.supabase.co/rest/v1';
 const PUB = 'sb_publishable_4znJSfRiJYpVGpALgOCWGg_q0Gz5jdx';
-let MARGEN = 0;
+let GANANCIA = 50;
 fetch(API + '/config?clave=eq.ganancia&select=valor', { headers: { apikey: PUB } })
   .then(r => r.json())
   .then(d => {
     if (Array.isArray(d) && d[0]) {
-      MARGEN = parseFloat(d[0].valor) || 0;
+      GANANCIA = parseFloat(d[0].valor);
+      if (isNaN(GANANCIA)) GANANCIA = 50;
       render();
     }
   })
   .catch(() => {});
 const precioPublico = l => {
   if (!l.precio) return 0;
-  const base = l.precio * (1 + MARGEN / 100);
-  return Math.max(Math.ceil(base / 50) * 50, l.precio + 50);
+  return Math.ceil((l.precio + GANANCIA) / 50) * 50;
 };
 
 const grid = document.getElementById('grid');
